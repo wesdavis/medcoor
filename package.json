@@ -6,12 +6,22 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "postinstall": "prisma skills sync || exit 0, prisma generate"
+  
   },
   "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "@react-pdf/renderer": "^4.9.0",
+    "aws-sdk": "^2.1693.0",
+    "axios": "^1.20.0",
     "next": "16.3.6",
+    "pdf-lib": "^1.17.1",
+    "pg": "^8.23.0",
+    "prisma": "^5.22.0",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

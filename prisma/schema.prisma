@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Specialist {
+  id                 String   @id @default(uuid())
+  specialty          String?
+  name               String?   // Maps to PHYSICIAN NAME
+  clinicName         String?   // Maps to OFFICE NAME
+  address            String?
+  phone              String?
+  intakeFax          String?
+  npi                String?
+  acceptedInsurances String?   // Legacy column for the current spreadsheet data
+  oonInsurance       String?   // Her newly requested column for future OON tracking
+  rules              String?   // Maps to the spreadsheet's NOTES column
+  website            String?   // Maps to the OFFICES tab
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  transmissions      ReferralTransmission[]
+}
+
+model ReferralTransmission {
+  id            String      @id @default(cuid())
+  createdAt     DateTime    @default(now()) 
+  dueDate       DateTime?  
+  patientName   String
+  patientDob    String?
+  specialistId  String?     // Made optional
+  specialist    Specialist? @relation(fields: [specialistId], references: [id]) // Made optional
+  
+  providerSeen  String?    
+  completedInfo String?    
+  internalNotes String?    
+  isCompleted   Boolean     @default(false)
+  
+  faxStatus     String      @default("logged") // Default for manual entries
+  faxUuid       String?
+  pageCount     Int         @default(0)
+}
