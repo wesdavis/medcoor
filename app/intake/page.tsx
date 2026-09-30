@@ -12,7 +12,7 @@ export default async function IntakePage() {
   return (
     <main className="max-w-2xl mx-auto p-10 font-sans">
       <h1 className="text-2xl font-bold mb-2">New Referral Intake</h1>
-      <p className="text-gray-600 mb-8">Generate cover sheet and merge files securely.</p>
+      <p className="text-white-600 mb-8">Generate cover sheet and merge files securely.</p>
       
       <IntakeForm specialists={specialists} />
     </main>

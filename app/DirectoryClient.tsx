@@ -71,8 +71,8 @@ export default function DirectoryClient({ specialists }: { specialists: any[] })
   return (
     <main className="max-w-6xl mx-auto px-4 relative">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-800">Referral Directory</h1>
-        <p className="text-slate-500">Active provider network and facility rules.</p>
+        <h1 className="text-3xl font-bold text-white-800">Referral Directory</h1>
+        <p className="text-white-500">Active provider network and facility rules.</p>
       </div>
 
       {/* Search & Filter Controls */}
