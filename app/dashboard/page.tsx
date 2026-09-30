@@ -44,10 +44,12 @@ export default async function DashboardPage() {
                     {tx.patientName}
                   </td>
                   <td className="px-6 py-4">
-                    {tx.specialist.name || tx.specialist.clinicName}
+                    {/* Fixed optional chaining below */}
+                    {tx.specialist?.name || tx.specialist?.clinicName || 'Pending Assignment'}
                   </td>
                   <td className="px-6 py-4">
-                    {tx.specialist.intakeFax || 'N/A'}
+                    {/* Fixed optional chaining below */}
+                    {tx.specialist?.intakeFax || 'N/A'}
                   </td>
                   <td className="px-6 py-4">
                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
