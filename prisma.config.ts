@@ -1,7 +1,5 @@
-import { definePrismaConfig } from "prisma/config";
-
-export default definePrismaConfig({
+export default {
   skills: {
     agents: ["claude", "cursor", "agents", "devin"],
   },
-});
+};
