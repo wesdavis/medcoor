@@ -69,8 +69,8 @@ export async function transmitFax(base64Pdf: string, patientName: string, patien
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        faxNumbers: [cleanFaxNumber],
-        coverLetter: false, // We built our own custom cover sheet
+        faxNumber: cleanFaxNumber,
+        coverLetter: false, 
         files: [
           {
             fileName: `${patientName.replace(/\s+/g, '_')}_Referral.pdf`,
