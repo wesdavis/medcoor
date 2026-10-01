@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import './globals.css';
+import { logout } from './actions/auth';
 
 export const metadata: Metadata = {
   title: 'MedCoor Referral Manager',
@@ -44,8 +45,14 @@ export default function RootLayout({
         </Link>
       </div>
 
-      {/* RIGHT: Invisible counterweight to perfectly balance the logo */}
-      <div className="flex-1"></div>
+      {/* RIGHT: Sign Out Button */}
+              <div className="flex-1 flex justify-end">
+                <form action={logout}>
+                  <button type="submit" className="text-sm font-medium text-slate-400 hover:text-white transition-colors px-3 py-2">
+                    Sign Out
+                  </button>
+                </form>
+              </div>
       
     </div>
   </div>
