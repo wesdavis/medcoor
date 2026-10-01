@@ -61,31 +61,32 @@ export async function transmitFax(base64Pdf: string, patientName: string, patien
     const digitsOnly = specialist.intakeFax.replace(/\D/g, '');
     const cleanFaxNumber = digitsOnly.startsWith('1') ? `+${digitsOnly}` : `+1${digitsOnly}`;
 
+    // Convert the base64 string back into a binary file Blob
+    const pdfBuffer = Buffer.from(base64Pdf, 'base64');
+    const pdfBlob = new Blob([pdfBuffer], { type: 'application/pdf' });
+
+    // Build a multipart/form-data payload required by Documo
+    const form = new FormData();
+    form.append('faxNumber', cleanFaxNumber);
+    form.append('coverPage', 'false');
+    form.append('file', pdfBlob, `${patientName.replace(/\s+/g, '_')}_Referral.pdf`);
+
     // 2. Transmit to Documo API
-    const documoResponse = await fetch('https://api.documo.com/v1/faxes', {
+    const documoResponse = await fetch('https://api.documo.com/v1/fax/send', {
       method: 'POST',
       headers: {
-        'Authorization': `Basic ${process.env.MFAX_API_KEY}`,
-        'Content-Type': 'application/json',
+        'Authorization': `Basic ${process.env.MFAX_API_KEY}`
+        // CRITICAL: Do NOT manually set 'Content-Type' to 'multipart/form-data'. 
+        // Next.js fetch will automatically set it and generate the correct boundary string.
       },
-      body: JSON.stringify({
-        faxNumber: cleanFaxNumber,
-        coverLetter: false, 
-        files: [
-          {
-            fileName: `${patientName.replace(/\s+/g, '_')}_Referral.pdf`,
-            fileBase64: base64Pdf
-          }
-        ]
-      })
+      body: form
     });
 
     // --- NEW ERROR TRAP ---
     if (!documoResponse.ok) {
       const err = await documoResponse.json();
-      console.error("DOCUMO RAW ERROR PAYLOAD:", err); // Prints to Vercel logs
+      console.error("DOCUMO RAW ERROR PAYLOAD:", err); 
       
-      // Attempt to grab the exact error string from Documo, or dump the whole object
       const errorMessage = err.message || err.error || JSON.stringify(err);
       throw new Error(`Documo API Error: ${errorMessage}`);
     }
