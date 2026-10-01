@@ -65,7 +65,7 @@ export async function transmitFax(base64Pdf: string, patientName: string, patien
     const documoResponse = await fetch('https://api.documo.com/v1/faxes', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.MFAX_API_KEY}`,
+        'Authorization': `Basic ${process.env.MFAX_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
