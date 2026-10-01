@@ -67,7 +67,7 @@ export async function transmitFax(base64Pdf: string, patientName: string, patien
 
     // Build a multipart/form-data payload required by Documo
     const form = new FormData();
-    form.append('faxNumber', cleanFaxNumber);
+    form.append('recipientFax', cleanFaxNumber);
     form.append('coverPage', 'false');
     form.append('file', pdfBlob, `${patientName.replace(/\s+/g, '_')}_Referral.pdf`);
 
