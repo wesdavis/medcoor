@@ -7,11 +7,15 @@ export async function POST(request: Request) {
   try {
     const payload = await request.json();
     
-    // Documo sends the event type and the fax details in the payload
-    const eventType = payload.event;
-    const faxId = payload.data?.id;
+    // This logs the exact incoming webhook to Vercel so we can read it
+    console.log("DOCUMO WEBHOOK PAYLOAD:", JSON.stringify(payload, null, 2));
+    
+    // Extract the event type and ID (checking multiple possible structures)
+    const eventType = payload.event || payload.type;
+    const faxId = payload.data?.id || payload.id;
 
     if (!faxId) {
+      console.error("Webhook missing fax ID. Payload:", payload);
       return NextResponse.json({ error: 'No fax ID provided' }, { status: 400 });
     }
 
@@ -23,20 +27,16 @@ export async function POST(request: Request) {
     } else if (eventType === 'fax.v1.outbound.failed') {
       newStatus = 'failed';
     } else {
-      // If it's a different event, just return 200 so Documo knows we received it
       return NextResponse.json({ message: 'Event ignored' }, { status: 200 });
     }
 
-    // Update the record in your database where the documoFaxId matches
-    await prisma.referralTransmission.updateMany({
-      where: { 
-        // Note: Ensure your Prisma schema has a field storing the Documo Fax ID (e.g., documoFaxId)
-        faxUuid: faxId
-      },
-      data: { 
-        faxStatus: newStatus 
-      }
+    // Update the database
+    const updateResult = await prisma.referralTransmission.updateMany({
+      where: { faxUuid: faxId },
+      data: { faxStatus: newStatus }
     });
+    
+    console.log(`Database update result: ${updateResult.count} rows modified for faxUuid ${faxId}`);
 
     return NextResponse.json({ message: 'Webhook processed successfully' }, { status: 200 });
 
