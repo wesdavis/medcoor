@@ -26,3 +26,14 @@ export async function createManualLog(formData: FormData) {
   });
   revalidatePath('/tracker');
 }
+
+export async function deleteTrackerRow(id: string) {
+  try {
+    await prisma.referralTransmission.delete({
+      where: { id }
+    });
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
+}

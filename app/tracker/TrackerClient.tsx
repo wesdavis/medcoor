@@ -1,10 +1,20 @@
 'use client'
 
 import { useRef } from 'react';
-import { updateTrackerRow, createManualLog } from '../actions/tracker';
+import { useRouter } from 'next/navigation';
+import { updateTrackerRow, createManualLog, deleteTrackerRow } from '../actions/tracker';
 
 export default function TrackerClient({ initialData }: { initialData: any[] }) {
   const formRef = useRef<HTMLFormElement>(null);
+  const router = useRouter();
+
+  const handleDelete = async (id: string) => {
+    // Requires a pop-up confirmation before actually deleting
+    if (window.confirm("Are you sure you want to permanently delete this referral?")) {
+      await deleteTrackerRow(id);
+      router.refresh(); // Instantly reloads the table to show it's gone
+    }
+  };
 
   const handleEdit = async (id: string, field: string, newValue: string) => {
     await updateTrackerRow(id, field, newValue);
@@ -47,7 +57,7 @@ export default function TrackerClient({ initialData }: { initialData: any[] }) {
 
       {/* SPREADSHEET TABLE */}
       <div className="bg-white border border-slate-300 shadow-sm overflow-x-auto">
-        <table className="w-full text-sm text-left border-collapse whitespace-nowrap table-fixed">
+        <table className="w-full text-sm text-left border-collapse whitespace-nowrap">
           <thead className="bg-yellow-300 text-black font-bold uppercase text-xs">
             <tr>
               <th className="border border-slate-300 w-12">
@@ -156,13 +166,21 @@ export default function TrackerClient({ initialData }: { initialData: any[] }) {
                     />
                   </td>
                   <td className="border border-slate-300 px-2 py-1 text-center">
-  <a 
-    href={`/intake?trackerId=${row.id}&name=${encodeURIComponent(row.patientName || '')}&dob=${encodeURIComponent(row.patientDob || '')}`}
-    className="bg-blue-600 text-white text-xs font-bold py-1 px-3 rounded hover:bg-blue-700 transition-colors inline-block"
-  >
-    Create Packet
-  </a>
-</td>
+                    <div className="flex gap-2 justify-center">
+                      <a 
+                        href={`/intake?trackerId=${row.id}&name=${encodeURIComponent(row.patientName || '')}&dob=${encodeURIComponent(row.patientDob || '')}`}
+                        className="bg-blue-600 text-white text-xs font-bold py-1 px-3 rounded hover:bg-blue-700 transition-colors inline-block"
+                      >
+                        Create Packet
+                      </a>
+                      <button 
+                        onClick={() => handleDelete(row.id)}
+                        className="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded hover:bg-red-700 transition-colors"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               );
             })}
