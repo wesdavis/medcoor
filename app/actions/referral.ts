@@ -92,7 +92,16 @@ export async function transmitFax(base64Pdf: string, patientName: string, patien
     }
 
     const documoData = await documoResponse.json();
-    const liveFaxId = documoData.id; // The real tracking ID from Documo
+    
+    // Let's log the exact response so we never have to guess again
+    console.log("DOCUMO SEND RESPONSE RAW:", JSON.stringify(documoData, null, 2));
+    
+    // Safely extract the ID no matter how Documo decides to nest it
+    const liveFaxId = documoData.messageId || documoData.id || documoData.data?.id || documoData.messages?.[0]?.id;
+
+    if (!liveFaxId) {
+      console.error("Failed to extract ID from Documo response");
+    }
 
     // 3. Calculate Due Date & Logging Text
     const dueDate = new Date();
