@@ -47,21 +47,45 @@ export default function TrackerClient({ initialData }: { initialData: any[] }) {
 
       {/* SPREADSHEET TABLE */}
       <div className="bg-white border border-slate-300 shadow-sm overflow-x-auto">
-        <table className="w-full text-sm text-left border-collapse whitespace-nowrap">
+        <table className="w-full text-sm text-left border-collapse whitespace-nowrap table-fixed">
           <thead className="bg-yellow-300 text-black font-bold uppercase text-xs">
             <tr>
-              <th className="border border-slate-300 px-2 py-2 text-center">Status</th>
-              <th className="border border-slate-300 px-2 py-2">Date Received</th>
-              <th className="border border-slate-300 px-2 py-2">10 Business Day Due</th>
-              <th className="border border-slate-300 px-2 py-2">Patient Name</th>
-              <th className="border border-slate-300 px-2 py-2">PT DOB</th>
-              <th className="border border-slate-300 px-2 py-2 w-64">Specialist Information</th>
-              <th className="border border-slate-300 px-2 py-2">Specialist PH</th>
-              <th className="border border-slate-300 px-2 py-2">Specialist Fax</th>
-              <th className="border border-slate-300 px-2 py-2">Provider Seen</th>
-              <th className="border border-slate-300 px-2 py-2 w-48">Completed Info</th>
-              <th className="border border-slate-300 px-2 py-2 w-64">Notes</th>
-              <th className="border border-slate-300 px-2 py-2 text-center">Action</th>
+              <th className="border border-slate-300 w-12">
+                <div className="px-2 py-2 text-center w-full">Status</div>
+              </th>
+              <th className="border border-slate-300 w-32">
+                <div className="resize-x overflow-hidden px-2 py-2 w-full min-w-[100px]">Date Received</div>
+              </th>
+              <th className="border border-slate-300 w-40">
+                <div className="resize-x overflow-hidden px-2 py-2 w-full min-w-[120px]">10 Business Day Due</div>
+              </th>
+              <th className="border border-slate-300 w-48">
+                <div className="resize-x overflow-hidden px-2 py-2 w-full min-w-[120px]">Patient Name</div>
+              </th>
+              <th className="border border-slate-300 w-32">
+                <div className="resize-x overflow-hidden px-2 py-2 w-full min-w-[100px]">PT DOB</div>
+              </th>
+              <th className="border border-slate-300 w-64">
+                <div className="resize-x overflow-hidden px-2 py-2 w-full min-w-[150px]">Specialist Information</div>
+              </th>
+              <th className="border border-slate-300 w-36">
+                <div className="resize-x overflow-hidden px-2 py-2 w-full min-w-[100px]">Specialist PH</div>
+              </th>
+              <th className="border border-slate-300 w-36">
+                <div className="resize-x overflow-hidden px-2 py-2 w-full min-w-[100px]">Specialist Fax</div>
+              </th>
+              <th className="border border-slate-300 w-40">
+                <div className="resize-x overflow-hidden px-2 py-2 w-full min-w-[120px]">Provider Seen</div>
+              </th>
+              <th className="border border-slate-300 w-48">
+                <div className="resize-x overflow-hidden px-2 py-2 w-full min-w-[150px]">Completed Info</div>
+              </th>
+              <th className="border border-slate-300 w-64">
+                <div className="resize-x overflow-hidden px-2 py-2 w-full min-w-[150px]">Notes</div>
+              </th>
+              <th className="border border-slate-300 w-32">
+                <div className="px-2 py-2 text-center w-full">Action</div>
+              </th>
             </tr>
           </thead>
           <tbody>

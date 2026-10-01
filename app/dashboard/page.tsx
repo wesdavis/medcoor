@@ -58,7 +58,7 @@ export default async function DashboardPage() {
                       ${tx.faxStatus === 'success' ? 'bg-green-100 text-green-800' : ''}
                       ${tx.faxStatus === 'failed' ? 'bg-red-100 text-red-800' : ''}
                     `}>
-                      {tx.faxStatus.toUpperCase()}
+                      {tx.faxStatus === 'success' ? 'SENT' : tx.faxStatus.toUpperCase()}
                     </span>
                   </td>
                 </tr>
