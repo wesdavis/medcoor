@@ -57,8 +57,9 @@ export async function transmitFax(base64Pdf: string, patientName: string, patien
     const specialist = await prisma.specialist.findUnique({ where: { id: specialistId } });
     if (!specialist || !specialist.intakeFax) throw new Error('Specialist missing fax number');
 
-    // Clean the fax number to ensure it is just digits (e.g., removing dashes/parentheses)
-    const cleanFaxNumber = specialist.intakeFax.replace(/\D/g, '');
+    // Clean the fax number to ensure it is just digits, and guarantee it starts with +1
+    const digitsOnly = specialist.intakeFax.replace(/\D/g, '');
+    const cleanFaxNumber = digitsOnly.startsWith('1') ? `+${digitsOnly}` : `+1${digitsOnly}`;
 
     // 2. Transmit to Documo API
     const documoResponse = await fetch('https://api.documo.com/v1/faxes', {
@@ -79,9 +80,14 @@ export async function transmitFax(base64Pdf: string, patientName: string, patien
       })
     });
 
+    // --- NEW ERROR TRAP ---
     if (!documoResponse.ok) {
       const err = await documoResponse.json();
-      throw new Error(err.message || 'Documo API rejected the transmission');
+      console.error("DOCUMO RAW ERROR PAYLOAD:", err); // Prints to Vercel logs
+      
+      // Attempt to grab the exact error string from Documo, or dump the whole object
+      const errorMessage = err.message || err.error || JSON.stringify(err);
+      throw new Error(`Documo API Error: ${errorMessage}`);
     }
 
     const documoData = await documoResponse.json();
