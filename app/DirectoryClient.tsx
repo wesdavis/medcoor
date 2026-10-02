@@ -37,6 +37,20 @@ export default function DirectoryClient({ specialists }: { specialists: any[] })
 
   // Action Handlers
 
+  const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSaving(true);
+    
+    const formData = new FormData(e.currentTarget);
+
+    // Call your existing database save action
+    await saveProvider(formData, editingDoc?.id || undefined);
+
+    router.refresh();
+    closeModal();
+    setIsSaving(false);
+  };
+
   const handleDelete = async (id: string) => {
     if (window.confirm("Are you sure you want to remove this provider from the network?")) {
       await deleteProvider(id);
@@ -57,20 +71,6 @@ export default function DirectoryClient({ specialists }: { specialists: any[] })
   const closeModal = () => {
     setIsModalOpen(false);
     setEditingDoc(null);
-  };
-
-  const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setIsSaving(true);
-    
-    const formData = new FormData(e.currentTarget);
-
-    // Call your existing database save action
-    await saveProvider(formData, editingDoc?.id || undefined);
-
-    router.refresh();
-    closeModal();
-    setIsSaving(false);
   };
 
   return (

@@ -39,7 +39,7 @@ model ReferralTransmission {
   internalNotes String?    
   isCompleted   Boolean     @default(false)
   
-  faxStatus     String      @default("logged") // Default for manual entries
+  faxStatus     String      @default("Pending Fax") // Default for manual entries
   faxUuid       String?
   pageCount     Int         @default(0)
   priority      String      @default("Routine")
