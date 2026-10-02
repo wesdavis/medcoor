@@ -23,11 +23,16 @@ export default function DirectoryClient({ specialists }: { specialists: any[] })
   ).sort();
 
   // Filter the database array instantly
-  const filteredSpecialists = specialists.filter((doc) => {
-    const searchString = `${doc.name || ''} ${doc.clinicName || ''}`.toLowerCase();
-    const matchesSearch = searchString.includes(searchQuery.toLowerCase());
-    const matchesSpecialty = selectedSpecialty ? doc.specialty === selectedSpecialty : true;
-    return matchesSearch && matchesSpecialty;
+  const filteredSpecialists = specialists.filter(doc => {
+    const term = searchQuery.toLowerCase();
+    return (
+      (doc.name || '').toLowerCase().includes(term) ||
+      (doc.clinicName || '').toLowerCase().includes(term) ||
+      (doc.specialty || '').toLowerCase().includes(term) ||
+      (doc.address || '').toLowerCase().includes(term) ||
+      (doc.phone || '').toLowerCase().includes(term) ||
+      (doc.intakeFax || '').toLowerCase().includes(term)
+    );
   });
 
   // Action Handlers
@@ -71,7 +76,7 @@ export default function DirectoryClient({ specialists }: { specialists: any[] })
   return (
     <main className="max-w-6xl mx-auto px-4 relative">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white-800">Referral Directory</h1>
+        <h1 className="text-3xl font-bold text-white-800">Provider Directory</h1>
         <p className="text-white-500">Active provider network and facility rules.</p>
       </div>
 
