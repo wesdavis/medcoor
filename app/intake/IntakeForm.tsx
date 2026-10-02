@@ -16,6 +16,48 @@ export default function IntakeForm({ specialists }: { specialists: any[] }) {
   const [previewPdf, setPreviewPdf] = useState<string | null>(null);
   const [formDataCache, setFormDataCache] = useState<any>(null);
 
+  const handleAuthDatesFormat = (e: React.FocusEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    if (!val) return;
+
+    const formatPart = (str: string) => {
+      // Strip everything except numbers
+      const nums = str.replace(/\D/g, '');
+      if (!nums) return str.trim();
+
+      let m, d, y;
+      
+      if (nums.length === 8) { 
+        // 8 digits: MMDDYYYY (e.g., 10212026)
+        m = nums.slice(0, 2); d = nums.slice(2, 4); y = nums.slice(4, 8);
+      } else if (nums.length === 6) { 
+        // 6 digits: MMDDYY (e.g., 102126)
+        m = nums.slice(0, 2); d = nums.slice(2, 4); y = '20' + nums.slice(4, 6);
+      } else if (nums.length === 4) { 
+        // 4 digits: MDYY (e.g., 3327 -> 03/03/2027)
+        m = '0' + nums[0]; d = '0' + nums[1]; y = '20' + nums.slice(2, 4);
+      } else if (nums.length === 5) {
+        // 5 digits is tricky (e.g., 11526 could be Jan 15 or Nov 5)
+        // We assume MM D YY if it starts with 10, 11, or 12
+        const firstTwo = parseInt(nums.slice(0, 2));
+        if (firstTwo >= 10 && firstTwo <= 12) {
+          m = nums.slice(0, 2); d = '0' + nums[2]; y = '20' + nums.slice(3, 5);
+        } else {
+          // Otherwise assume M DD YY
+          m = '0' + nums[0]; d = nums.slice(1, 3); y = '20' + nums.slice(3, 5);
+        }
+      } else {
+        // If it doesn't match standard patterns, leave it alone so we don't delete data
+        return str.trim();
+      }
+      return `${m}/${d}/${y}`;
+    };
+
+    // Split by the dash, format both sides independently, and stitch them back together
+    const parts = val.split('-');
+    e.target.value = parts.map(formatPart).join(' - ');
+  };
+
   async function handlePreview(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
@@ -177,7 +219,12 @@ export default function IntakeForm({ specialists }: { specialists: any[] }) {
           </div>
           <div>
             <label className="block text-sm font-medium mb-1 text-slate-700">Approval Dates</label>
-            <input name="authDates" className="w-full border p-2 rounded text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="01/01/26 - 06/01/26" />
+            <input 
+  name="authDates" 
+  onBlur={handleAuthDatesFormat}
+  className="w-full border p-2 rounded text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" 
+  placeholder="01/01/2026 - 06/01/2026" 
+/>
           </div>
         </div>
 

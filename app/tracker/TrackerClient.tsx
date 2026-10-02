@@ -8,6 +8,12 @@ export default function TrackerClient({ initialData, specialists }: { initialDat
   const formRef = useRef<HTMLFormElement>(null);
   const router = useRouter();
 
+  const handleAdd = async (formData: FormData) => {
+    await createManualLog(formData);
+    formRef.current?.reset(); // Clears the form instantly after submitting
+    router.refresh(); // Instantly re-fetches the updated database for the table
+  };
+  
   const handleDelete = async (id: string) => {
     // Requires a pop-up confirmation before actually deleting
     if (window.confirm("Are you sure you want to permanently delete this referral?")) {
@@ -24,10 +30,6 @@ export default function TrackerClient({ initialData, specialists }: { initialDat
     await updateTrackerRow(id, 'isCompleted', !currentStatus);
   };
 
-  const handleAdd = async (formData: FormData) => {
-    await createManualLog(formData);
-    formRef.current?.reset(); // Clears the form instantly after submitting
-  };
 
   return (
     <div className="space-y-4">
