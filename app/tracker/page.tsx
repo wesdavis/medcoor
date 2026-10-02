@@ -5,9 +5,15 @@ import TrackerClient from './TrackerClient';
 const prisma = new PrismaClient();
 
 export default async function TrackerPage() {
-  const referrals = await prisma.referralTransmission.findMany({
+  // Fetch existing rows
+  const transmissions = await prisma.referralTransmission.findMany({
     orderBy: { createdAt: 'desc' },
     include: { specialist: true }
+  });
+
+  // Fetch specialists for the dropdowns
+  const specialists = await prisma.specialist.findMany({
+    orderBy: { specialty: 'asc' }
   });
 
   return (
@@ -16,7 +22,7 @@ export default async function TrackerPage() {
         <h1 className="text-2xl font-bold text-white">Live Referral Calendar</h1>
         <p className="text-1xl font-bold text-white">Auto-syncs with intake faxes. Click any text to edit.</p>
       </div>
-      <TrackerClient initialData={referrals} />
+      <TrackerClient initialData={transmissions} specialists={specialists} />
     </main>
   );
 }
