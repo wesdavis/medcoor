@@ -12,6 +12,11 @@ export async function saveProvider(formData: FormData, existingId?: string) {
     specialty: formData.get('specialty') as string || null,
     intakeFax: formData.get('intakeFax') as string || null,
     phone: formData.get('phone') as string || null,
+    
+    // NEW FIELDS ADDED HERE
+    address: formData.get('address') as string || null,
+    website: formData.get('website') as string || null,
+    
     acceptedInsurances: formData.get('acceptedInsurances') as string || null,
     oonInsurance: formData.get('oonInsurance') as string || null,
     rules: formData.get('rules') as string || null,
