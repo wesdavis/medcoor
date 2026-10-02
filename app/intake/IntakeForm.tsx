@@ -12,6 +12,7 @@ export default function IntakeForm({ specialists }: { specialists: any[] }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const [selectedSpecialist, setSelectedSpecialist] = useState('');
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(false);
@@ -134,6 +135,12 @@ export default function IntakeForm({ specialists }: { specialists: any[] }) {
     setLoading(false);
   }
 
+  const filteredSpecialists = specialists.filter(doc => 
+    (doc.name || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
+    (doc.clinicName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (doc.specialty || '').toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <>
       {/* PREVIEW CONTAINER - Hidden when previewPdf is null */}
@@ -202,7 +209,6 @@ export default function IntakeForm({ specialists }: { specialists: any[] }) {
         <div className="relative">
           <label className="block text-sm font-medium mb-1 text-slate-700">Destination Specialist</label>
           
-          {/* Visible search bar */}
           <input 
             type="text" 
             required
@@ -211,35 +217,53 @@ export default function IntakeForm({ specialists }: { specialists: any[] }) {
             onChange={(e) => {
               setSearchTerm(e.target.value);
               setShowDropdown(true);
-              setSelectedSpecialist(''); // Clears ID if they alter the name
+              setSelectedSpecialist('');
+              setHighlightedIndex(-1); // Reset highlight when typing
             }}
             onFocus={() => setShowDropdown(true)}
-            onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+            onBlur={() => setTimeout(() => {
+              setShowDropdown(false);
+              setHighlightedIndex(-1);
+            }, 200)}
+            onKeyDown={(e) => {
+              if (!showDropdown) return;
+              
+              if (e.key === 'ArrowDown') {
+                e.preventDefault(); // Stop cursor from jumping
+                setHighlightedIndex(prev => prev < filteredSpecialists.length - 1 ? prev + 1 : prev);
+              } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                setHighlightedIndex(prev => prev > 0 ? prev - 1 : 0);
+              } else if (e.key === 'Enter') {
+                e.preventDefault(); // Stop form submission
+                if (highlightedIndex >= 0 && filteredSpecialists[highlightedIndex]) {
+                  const doc = filteredSpecialists[highlightedIndex];
+                  setSearchTerm(`${doc.name || doc.clinicName} - ${doc.specialty}`);
+                  setSelectedSpecialist(doc.id);
+                  setShowDropdown(false);
+                }
+              }
+            }}
             className="w-full border p-2 rounded text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           
-          {/* Hidden input to securely pass the ID to your backend */}
           <input type="hidden" name="specialistId" value={selectedSpecialist} />
           
-          {/* Filtered Dropdown List */}
-          {showDropdown && (
+          {showDropdown && filteredSpecialists.length > 0 && (
             <ul className="absolute z-10 w-full bg-white border border-slate-300 mt-1 max-h-60 overflow-y-auto rounded shadow-lg">
-              {specialists
-                .filter(doc => 
-                  (doc.name || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
-                  (doc.clinicName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-                  (doc.specialty || '').toLowerCase().includes(searchTerm.toLowerCase())
-                )
-                .map(doc => (
+              {filteredSpecialists.map((doc, index) => (
                   <li 
                     key={doc.id}
                     onMouseDown={(e) => {
-                      e.preventDefault(); // Prevents the input from closing before the click registers
+                      e.preventDefault();
                       setSearchTerm(`${doc.name || doc.clinicName} - ${doc.specialty}`);
                       setSelectedSpecialist(doc.id);
                       setShowDropdown(false);
                     }}
-                    className="p-2 hover:bg-blue-100 cursor-pointer text-sm text-slate-900 border-b border-slate-100 last:border-0"
+                    onMouseEnter={() => setHighlightedIndex(index)}
+                    className={`p-2 cursor-pointer text-sm text-slate-900 border-b border-slate-100 last:border-0 ${
+                      index === highlightedIndex ? 'bg-blue-100' : 'hover:bg-slate-50'
+                    }`}
                   >
                     <div className="font-bold">{doc.name || doc.clinicName}</div>
                     <div className="text-xs text-slate-500">{doc.specialty}</div>
