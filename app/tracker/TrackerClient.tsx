@@ -112,8 +112,21 @@ export default function TrackerClient({ initialData }: { initialData: any[] }) {
           <tbody>
             {initialData.map((row) => {
               const isDone = row.isCompleted;
-              const rowColor = isDone ? 'bg-green-500 text-white font-medium' : 'bg-white text-slate-900';
-              const inputColor = isDone ? 'bg-green-500 text-white placeholder-green-100' : 'bg-white text-slate-900';
+              
+              // Define base colors depending on priority and completion
+              let rowColor = 'bg-white text-slate-900';
+              let inputColor = 'bg-white text-slate-900';
+
+              if (isDone) {
+                rowColor = 'bg-green-500 text-white font-medium';
+                inputColor = 'bg-green-500 text-white placeholder-green-100';
+              } else if (row.priority === 'STAT') {
+                rowColor = 'bg-red-200 text-red-900 font-bold';
+                inputColor = 'bg-red-200 text-red-900 placeholder-red-700/50';
+              } else if (row.priority === 'Urgent') {
+                rowColor = 'bg-orange-100 text-orange-900 font-semibold';
+                inputColor = 'bg-orange-100 text-orange-900 placeholder-orange-700/50';
+              }
 
               return (
                 <tr key={row.id} className={`${rowColor} border-b border-slate-300 hover:opacity-90`}>
@@ -129,10 +142,7 @@ export default function TrackerClient({ initialData }: { initialData: any[] }) {
                     <select
                       defaultValue={row.priority || 'Routine'}
                       onChange={(e) => handleEdit(row.id, 'priority', e.target.value)}
-                      className={`w-full p-1 focus:outline-none focus:ring-1 focus:ring-blue-500 font-bold ${
-                        row.priority === 'STAT' ? 'text-red-600' : 
-                        row.priority === 'Urgent' ? 'text-orange-500' : 'text-slate-700'
-                      } ${inputColor}`}
+                      className={`w-full p-1 focus:outline-none focus:ring-1 focus:ring-blue-500 font-bold cursor-pointer ${inputColor}`}
                     >
                       <option value="Routine">Routine</option>
                       <option value="Urgent">Urgent</option>
