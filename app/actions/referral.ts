@@ -35,7 +35,7 @@ export async function generatePreview(formData: FormData) {
       authDates: formData.get('authDates'),
       specialty: specialist.specialty, // NEW
       specialistName: specialist.name,
-      specialistAddress: specialist.clinicName, // Using clinicName for Address
+      specialistAddress: specialist?.address || '',
       specialistPhone: specialist.phone, // NEW
       specialistFax: specialist.intakeFax,
       specialistNpi: specialist.npi,

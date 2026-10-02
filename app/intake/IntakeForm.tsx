@@ -9,6 +9,9 @@ export default function IntakeForm({ specialists }: { specialists: any[] }) {
   const defaultName = searchParams.get('name') || '';
   const defaultDob = searchParams.get('dob') || '';
   const trackerId = searchParams.get('trackerId') || null;
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [selectedSpecialist, setSelectedSpecialist] = useState('');
 
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(false);
@@ -196,16 +199,54 @@ export default function IntakeForm({ specialists }: { specialists: any[] }) {
           </div>
         </div>
 
-        <div>
+        <div className="relative">
           <label className="block text-sm font-medium mb-1 text-slate-700">Destination Specialist</label>
-          <select required name="specialistId" className="w-full border p-2 rounded bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <option value="" className="text-slate-500">-- Select Verified Specialist --</option>
-            {specialists.map((doc) => (
-              <option key={doc.id} value={doc.id} className="text-slate-900">
-                {doc.name || doc.clinicName} - {doc.specialty}
-              </option>
-            ))}
-          </select>
+          
+          {/* Visible search bar */}
+          <input 
+            type="text" 
+            required
+            placeholder="Type to search providers or clinics..."
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setShowDropdown(true);
+              setSelectedSpecialist(''); // Clears ID if they alter the name
+            }}
+            onFocus={() => setShowDropdown(true)}
+            onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+            className="w-full border p-2 rounded text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          
+          {/* Hidden input to securely pass the ID to your backend */}
+          <input type="hidden" name="specialistId" value={selectedSpecialist} />
+          
+          {/* Filtered Dropdown List */}
+          {showDropdown && (
+            <ul className="absolute z-10 w-full bg-white border border-slate-300 mt-1 max-h-60 overflow-y-auto rounded shadow-lg">
+              {specialists
+                .filter(doc => 
+                  (doc.name || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
+                  (doc.clinicName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                  (doc.specialty || '').toLowerCase().includes(searchTerm.toLowerCase())
+                )
+                .map(doc => (
+                  <li 
+                    key={doc.id}
+                    onMouseDown={(e) => {
+                      e.preventDefault(); // Prevents the input from closing before the click registers
+                      setSearchTerm(`${doc.name || doc.clinicName} - ${doc.specialty}`);
+                      setSelectedSpecialist(doc.id);
+                      setShowDropdown(false);
+                    }}
+                    className="p-2 hover:bg-blue-100 cursor-pointer text-sm text-slate-900 border-b border-slate-100 last:border-0"
+                  >
+                    <div className="font-bold">{doc.name || doc.clinicName}</div>
+                    <div className="text-xs text-slate-500">{doc.specialty}</div>
+                  </li>
+                ))}
+            </ul>
+          )}
         </div>
 
         <div>
