@@ -65,6 +65,12 @@ export default function IntakeForm({ specialists }: { specialists: any[] }) {
     
     // 1. Define formData first
     const formData = new FormData(e.currentTarget);
+    // NEW: Intercept the browser's YYYY-MM-DD format and flip it to MM/DD/YYYY
+    const rawDob = formData.get('patientDob') as string;
+    if (rawDob && rawDob.includes('-')) {
+      const [year, month, day] = rawDob.split('-');
+      formData.set('patientDob', `${month}/${day}/${year}`);
+    }
     const result = await generatePreview(formData);
 
     if (result.success) {
