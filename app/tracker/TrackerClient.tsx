@@ -34,6 +34,14 @@ export default function TrackerClient({ initialData }: { initialData: any[] }) {
       {/* QUICK ADD FORM FOR THE OFFICE GIRLS */}
       <form ref={formRef} action={handleAdd} className="bg-slate-50 p-4 border border-slate-300 flex items-end gap-4 shadow-sm">
         <div>
+          <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Priority</label>
+          <select name="priority" className="border border-slate-300 p-2 w-28 text-sm focus:ring-2 focus:ring-blue-500 bg-white">
+            <option value="Routine">Routine</option>
+            <option value="Urgent">Urgent</option>
+            <option value="STAT">STAT</option>
+          </select>
+        </div>
+        <div>
           <label className="block text-xs font-bold text-slate-700 uppercase mb-1">New Patient Name</label>
           <input required name="patientName" className="border border-slate-300 p-2 w-48 text-sm focus:ring-2 focus:ring-blue-500" placeholder="e.g., John Doe" />
         </div>
@@ -62,6 +70,9 @@ export default function TrackerClient({ initialData }: { initialData: any[] }) {
             <tr>
               <th className="border border-slate-300 w-12">
                 <div className="px-2 py-2 text-center w-full">Status</div>
+              </th>
+              <th className="border border-slate-300 w-24">
+                <div className="resize-x overflow-hidden px-2 py-2 w-full min-w-[80px]">Priority</div>
               </th>
               <th className="border border-slate-300 w-32">
                 <div className="resize-x overflow-hidden px-2 py-2 w-full min-w-[100px]">Date Received</div>
@@ -113,6 +124,20 @@ export default function TrackerClient({ initialData }: { initialData: any[] }) {
                       onChange={() => toggleComplete(row.id, isDone)}
                       className="w-4 h-4 cursor-pointer"
                     />
+                  </td>
+                  <td className="border border-slate-300 px-1 py-1 font-bold">
+                    <select
+                      defaultValue={row.priority || 'Routine'}
+                      onChange={(e) => handleEdit(row.id, 'priority', e.target.value)}
+                      className={`w-full p-1 focus:outline-none focus:ring-1 focus:ring-blue-500 font-bold ${
+                        row.priority === 'STAT' ? 'text-red-600' : 
+                        row.priority === 'Urgent' ? 'text-orange-500' : 'text-slate-700'
+                      } ${inputColor}`}
+                    >
+                      <option value="Routine">Routine</option>
+                      <option value="Urgent">Urgent</option>
+                      <option value="STAT">STAT</option>
+                    </select>
                   </td>
                   <td className="border border-slate-300 px-2 py-1">
                     {new Date(row.createdAt).toLocaleDateString()}

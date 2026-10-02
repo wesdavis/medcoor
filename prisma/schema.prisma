@@ -42,4 +42,5 @@ model ReferralTransmission {
   faxStatus     String      @default("logged") // Default for manual entries
   faxUuid       String?
   pageCount     Int         @default(0)
+  priority      String      @default("Routine")
 }

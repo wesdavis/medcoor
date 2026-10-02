@@ -14,17 +14,40 @@ export async function updateTrackerRow(id: string, field: string, value: string 
 }
 
 export async function createManualLog(formData: FormData) {
-  await prisma.referralTransmission.create({
-    data: {
-      patientName: formData.get('patientName') as string,
-      patientDob: formData.get('patientDob') as string || 'N/A',
-      providerSeen: formData.get('providerSeen') as string || '',
-      internalNotes: formData.get('internalNotes') as string || '',
-      faxStatus: 'logged',
-      pageCount: 0,
+  try {
+    // Calculate 10 Business Day Due Date
+    const dueDate = new Date();
+    let addedDays = 0;
+    while (addedDays < 10) {
+      dueDate.setDate(dueDate.getDate() + 1);
+      if (dueDate.getDay() !== 0 && dueDate.getDay() !== 6) {
+        addedDays++;
+      }
     }
-  });
-  revalidatePath('/tracker');
+
+    // Format DOB to MM/DD/YYYY if provided
+    const rawDob = formData.get('patientDob') as string;
+    let formattedDob = rawDob;
+    if (rawDob && rawDob.includes('-')) {
+      const [year, month, day] = rawDob.split('-');
+      formattedDob = `${month}/${day}/${year}`;
+    }
+
+    await prisma.referralTransmission.create({
+      data: {
+        patientName: formData.get('patientName') as string,
+        patientDob: formattedDob,
+        providerSeen: formData.get('providerSeen') as string,
+        internalNotes: formData.get('internalNotes') as string,
+        priority: (formData.get('priority') as string) || 'Routine',
+        dueDate: dueDate,
+        // We will add the specialist logic in the next step!
+      }
+    });
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
 }
 
 export async function deleteTrackerRow(id: string) {
