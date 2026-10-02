@@ -9,9 +9,18 @@ export default function IntakeForm({ specialists }: { specialists: any[] }) {
   const defaultName = searchParams.get('name') || '';
   const defaultDob = searchParams.get('dob') || '';
   const trackerId = searchParams.get('trackerId') || null;
-  const [searchTerm, setSearchTerm] = useState('');
+  const defaultSpecialistId = searchParams.get('specialistId') || '';
+
+  // Match the ID from the URL to the actual doctor so we can display their name in the search bar
+  const preSelectedDoctor = specialists.find(doc => doc.id === defaultSpecialistId);
+  const defaultSearchTerm = preSelectedDoctor 
+    ? `${preSelectedDoctor.name || preSelectedDoctor.clinicName} - ${preSelectedDoctor.specialty}` 
+    : '';
+
+  // Initialize your custom dropdown with the pre-selected doctor
+  const [searchTerm, setSearchTerm] = useState(defaultSearchTerm);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [selectedSpecialist, setSelectedSpecialist] = useState('');
+  const [selectedSpecialist, setSelectedSpecialist] = useState(defaultSpecialistId);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
   const [status, setStatus] = useState('');

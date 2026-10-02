@@ -3,6 +3,7 @@
 import { useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { updateTrackerRow, createManualLog, deleteTrackerRow } from '../actions/tracker';
+import Link from 'next/link';
 
 export default function TrackerClient({ initialData, specialists }: { initialData: any[], specialists: any[] }) {
   const formRef = useRef<HTMLFormElement>(null);
@@ -225,14 +226,14 @@ export default function TrackerClient({ initialData, specialists }: { initialDat
                       className={`w-full p-1 focus:outline-none focus:ring-1 focus:ring-blue-500 ${inputColor}`} 
                     />
                   </td>
-                  <td className="border border-slate-300 px-2 py-1 text-center">
-                    <div className="flex gap-2 justify-center">
-                      <a 
-                        href={`/intake?trackerId=${row.id}&name=${encodeURIComponent(row.patientName || '')}&dob=${encodeURIComponent(row.patientDob || '')}`}
-                        className="bg-blue-600 text-white text-xs font-bold py-1 px-3 rounded hover:bg-blue-700 transition-colors inline-block"
-                      >
-                        Create Packet
-                      </a>
+                  <td className="border border-slate-300 px-1 py-1 text-center">
+                    <div className="flex justify-center gap-1">
+                      <Link href={`/intake?name=${encodeURIComponent(row.patientName)}&dob=${encodeURIComponent(row.patientDob || '')}&trackerId=${row.id}&specialistId=${row.specialistId || ''}`}>
+                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded text-xs font-bold transition-colors">
+                          Create Packet
+                        </button>
+                      </Link>
+                      {/* ... Keep your delete button exactly as it is ... */}
                       <button 
                         onClick={() => handleDelete(row.id)}
                         className="bg-red-600 text-white text-xs font-bold py-1 px-3 rounded hover:bg-red-700 transition-colors"
