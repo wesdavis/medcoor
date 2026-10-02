@@ -41,7 +41,8 @@ export async function createManualLog(formData: FormData) {
         internalNotes: formData.get('internalNotes') as string,
         priority: (formData.get('priority') as string) || 'Routine',
         dueDate: dueDate,
-        // We will add the specialist logic in the next step!
+        specialistId: (formData.get('specialistId') as string) || null,
+        
       }
     });
     return { success: true };

@@ -4,7 +4,7 @@ import { useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { updateTrackerRow, createManualLog, deleteTrackerRow } from '../actions/tracker';
 
-export default function TrackerClient({ initialData }: { initialData: any[] }) {
+export default function TrackerClient({ initialData, specialists }: { initialData: any[], specialists: any[] }) {
   const formRef = useRef<HTMLFormElement>(null);
   const router = useRouter();
 
@@ -48,6 +48,17 @@ export default function TrackerClient({ initialData }: { initialData: any[] }) {
         <div>
           <label className="block text-xs font-bold text-slate-700 uppercase mb-1">DOB</label>
           <input name="patientDob" type="date" className="border border-slate-300 p-2 w-36 text-sm focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div>
+          <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Destination Specialist</label>
+          <select name="specialistId" className="border border-slate-300 p-2 w-48 text-sm focus:ring-2 focus:ring-blue-500 bg-white">
+            <option value="">-- Pending Assignment --</option>
+            {specialists.map((doc) => (
+              <option key={doc.id} value={doc.id}>
+                {doc.name || doc.clinicName}
+              </option>
+            ))}
+          </select>
         </div>
         <div>
           <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Provider Seen (Origin)</label>
@@ -170,9 +181,21 @@ export default function TrackerClient({ initialData }: { initialData: any[] }) {
                     />
                   </td>
                   
-                  {/* Auto-filled from Specialist Database */}
-                  <td className="border border-slate-300 px-2 py-1 overflow-hidden text-ellipsis">
-                    {row.specialist ? `${row.specialist.name} - ${row.specialist.clinicName}` : 'Pending Assignment'}
+                  
+                  {/* Editable Specialist Dropdown */}
+                  <td className="border border-slate-300 px-1 py-1">
+                    <select
+                      defaultValue={row.specialistId || ''}
+                      onChange={(e) => handleEdit(row.id, 'specialistId', e.target.value)}
+                      className={`w-full p-1 focus:outline-none focus:ring-1 focus:ring-blue-500 truncate font-medium cursor-pointer ${inputColor}`}
+                    >
+                      <option value="">Pending Assignment</option>
+                      {specialists.map((doc) => (
+                        <option key={doc.id} value={doc.id}>
+                          {doc.name || doc.clinicName} - {doc.specialty}
+                        </option>
+                      ))}
+                    </select>
                   </td>
                   <td className="border border-slate-300 px-2 py-1">{row.specialist?.phone}</td>
                   <td className="border border-slate-300 px-2 py-1">{row.specialist?.intakeFax}</td>
